@@ -1,12 +1,25 @@
 {
   "name": "czip",
+  "description": "Compression and encryption of files and folders",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "about": "echo \"created by webdevelopland\""
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "author": {
+    "name": "Web Developland",
+    "email": "webdevelopland@protonmail.com"
+  },
+  "keywords": [
+    "compress",
+    "decompress",
+    "encrypt",
+    "decrypt",
+    "file",
+    "folder"
+  ],
+  "license": "MIT",
+  "preferGlobal": true,
+  "bin": {
+    "czip": "index.js"
+  }
 }
