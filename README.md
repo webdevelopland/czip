@@ -9,23 +9,24 @@ npm install czip --global
 Encrypt
 ```javascript
 // item -> item.czip
-czip e <item name>
+czip e item
 ```
 
 Decrypt
 ```javascript
 // item.czip -> item
-czip d <czip archive name>
+czip d item
+// WRONG: czip d item.czip
 ```
 
 Start session
 ```javascript
 // item.czip -> item
-czip s <czip archive name>
+czip s item
 // Remove item, when session is ended
 ```
 
 Is the password correct?
 ```javascript
-czip v <czip archive name>
+czip v item
 ```
