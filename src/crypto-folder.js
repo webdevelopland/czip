@@ -25,16 +25,19 @@ function encryptFolder(inPath, outPath, password, algorithm) {
   var folders = [];
   for (let child of childList) {
     const relativePath = path.relative(folderPath, child.path);
+    // Windows backslash fix:
+    const slashPath = relativePath.replace(/\\/g, '/');
+
     if (child.isFolder) {
       // Folder
       folders.push({
-        path: relativePath,
+        path: slashPath,
       });
     } else {
       // File
       const content = fs.readFileSync(child.path, DATA_ENCODING);
       files.push({
-        path: relativePath,
+        path: slashPath,
         content: content,
       });
     }
