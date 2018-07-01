@@ -9,6 +9,10 @@
     "name": "Web Developland",
     "email": "webdevelopland@protonmail.com"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webdevelopland/czip.git"
+  },
   "keywords": [
     "compress",
     "decompress",

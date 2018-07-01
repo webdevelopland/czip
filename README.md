@@ -1,6 +1,11 @@
 ## czipper
 ### Compression and encryption of files and folders
 
+Install
+```javascript
+npm install czip --global
+```
+
 Encrypt
 ```javascript
 // item -> item.czip
