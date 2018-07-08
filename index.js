@@ -31,12 +31,12 @@ function bootstrap(callback) {
 // Get file path and verify mod
 function getFilePath(fileBase, czip, mode) {
   switch (mode) {
-    case 'e':
+    case '-e':
       var filePath = fileBase;
       break;
-    case 'd':
-    case 'v':
-    case 's':
+    case '-d':
+    case '-v':
+    case '-s':
       var filePath = czip;
       break;
     default:
@@ -65,11 +65,11 @@ function checkPassword(password, callback) {
 bootstrap((mode, fileBase, czip, password) => {
   const algorithm = 'aes-256-cbc';
   switch (mode) {
-    case 'e':
+    case '-e':
       // Encryption
       encryptFolder(fileBase, czip, password, algorithm);
       kill('Encrypted');
-    case 'd':
+    case '-d':
       // Decryption
       var error = decryptFolder(czip, fileBase, password, algorithm);
       if (error) {
@@ -77,14 +77,14 @@ bootstrap((mode, fileBase, czip, password) => {
       } else {
         kill('Decrypted');
       }
-    case 'v':
+    case '-v':
       // Is the password correct?
       if (isPasswordCorrect(czip, password, algorithm)) {
         kill('Password is correct.');
       } else {
         kill('Password is wrong.');
       }
-    case 's':
+    case '-s':
       // Session
       var error = decryptFolder(czip, fileBase, password, algorithm);
       if (error) {

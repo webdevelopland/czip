@@ -1,32 +1,55 @@
-## czipper
+## czip
 ### Compression and encryption of files and folders
 
-Install
+#### Install
 ```javascript
 npm install czip --global
 ```
 
-Encrypt
+#### Encrypt
+item -> item.czip
 ```javascript
-// item -> item.czip
-czip e item
+czip -e item
 ```
 
-Decrypt
+#### Decrypt
+item.czip -> item
 ```javascript
-// item.czip -> item
-czip d item
+czip -d item
 // WRONG: czip d item.czip
 ```
 
-Start session
+#### Is the password correct?
 ```javascript
-// item.czip -> item
-czip s item
-// Remove item, when session is ended
+czip -v item
 ```
 
-Is the password correct?
+#### Session
+Start session  
+item.czip -> item
 ```javascript
-czip v item
+czip -s item
+```
+When session is ended, item will be removed  
+
+#### Session shortcuts
+End session
+```
+Ctrl+C
+```
+or
+```
+Esc
+```
+
+Save session  
+All local files will be encrypted to czip archive without ending the session.
+```
+Ctrl+S
+```
+
+#### Features
+You're able to set password with a command. Example:
+```javascript
+czip -d item mySuperPass
 ```
