@@ -1,55 +1,78 @@
-## czip
-### Compression and encryption of files and folders
+# czip
+Compression and encryption of files and folders
 
-#### Install
+## Install
 ```javascript
 npm install czip --global
 ```
 
-#### Encrypt
-item -> item.czip
+## Encrypt
+item > item.czip
 ```javascript
 czip -e item
 ```
 
-#### Decrypt
-item.czip -> item
+## Decrypt
+item.czip > item
 ```javascript
 czip -d item
 // WRONG: czip d item.czip
 ```
 
-#### Is the password correct?
+## Is the password correct?
 ```javascript
-czip -v item
+czip -p item
+```
+Exit shortcuts:
+```
+Ctrl+C or Esc
 ```
 
-#### Session
-Start session  
-item.czip -> item
+## Session
+Start session.  
+item.czip > item
 ```javascript
 czip -s item
 ```
-When session is ended, item will be removed  
+When session is ended, item will be removed.  
 
-#### Session shortcuts
-End session
+### Shortcuts & commands
+You can use it while session is open.  
+
+#### End session
+Shortcuts:
 ```
-Ctrl+C
+Ctrl+C or Esc
 ```
-or
+Command:
 ```
-Esc
+exit
 ```
 
-Save session  
-All local files will be encrypted to czip archive without ending the session.
+#### Save session  
+All local files will be encrypted to czip archive without ending the session.  
+
+Shortcut:
 ```
 Ctrl+S
 ```
+Command:
+```
+save
+```
 
-#### Features
-You're able to set password with a command. Example:
+## Features
+You're able to set password in arguments. Example:
 ```javascript
 czip -d item mySuperPass
+```
+
+Current version
+```javascript
+czip -v
+```
+
+Help
+```javascript
+czip -h
 ```

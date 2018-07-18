@@ -12,6 +12,8 @@ const { rmdirfull } = require('./src/folder');
 
 function bootstrap(callback) {
   var mode = process.argv[2];
+  simpleMods(mode);
+
   var fileBase = process.argv[3];
   var password = process.argv[4];
 
@@ -28,6 +30,31 @@ function bootstrap(callback) {
   });
 }
 
+function simpleMods(mode) {
+  switch (mode) {
+    case '-v':
+    case '--version':
+      const packageJson = require('./package');
+      kill('czip version: ' + packageJson.version);
+    case '-h':
+    case '--help':
+      console.log('czip help');
+      console.log('');
+      console.log('Modes:');
+      console.log('-e: Encrypt');
+      console.log('-d: Decrypt');
+      console.log('-p: Is the password correct?');
+      console.log('-s: Session');
+      console.log('-v: Current version');
+      console.log('-h: Help');
+      console.log('');
+      console.log('Example:');
+      console.log('czip -e itemname');
+      console.log('');
+      kill('More info: https://www.npmjs.com/package/czip');
+  }
+}
+
 // Get file path and verify mod
 function getFilePath(fileBase, czip, mode) {
   switch (mode) {
@@ -35,12 +62,12 @@ function getFilePath(fileBase, czip, mode) {
       var filePath = fileBase;
       break;
     case '-d':
-    case '-v':
+    case '-p':
     case '-s':
       var filePath = czip;
       break;
     default:
-      kill('Error: Invalid mode');
+      simpleMods('--help');
   }
 
   if (!fs.existsSync(filePath)) {
@@ -77,7 +104,7 @@ bootstrap((mode, fileBase, czip, password) => {
       } else {
         kill('Decrypted');
       }
-    case '-v':
+    case '-p':
       // Is the password correct?
       if (isPasswordCorrect(czip, password, algorithm)) {
         kill('Password is correct.');
