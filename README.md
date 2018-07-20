@@ -61,6 +61,11 @@ Command:
 save
 ```
 
+## Change password
+```javascript
+czip -n item
+```
+
 ## Features
 You're able to set password in arguments. Example:
 ```javascript

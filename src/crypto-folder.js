@@ -112,8 +112,40 @@ function isPasswordCorrect(filepath, password, algorithm) {
   return true;
 }
 
+function changePassword(
+  archivePath,
+  currentPassword,
+  newPassowrd,
+  algorithm,
+) {
+  var encryptedItems = fs.readFileSync(archivePath, ENCRYPTED_ENCODING);
+
+  try {
+    const data = decrypt(
+      encryptedItems,
+      currentPassword,
+      algorithm,
+      DECRYPTED_ENCODING,
+      ENCRYPTED_ENCODING,
+    );
+
+    encryptedItems = encrypt(
+      data,
+      newPassowrd,
+      algorithm,
+      DECRYPTED_ENCODING,
+      ENCRYPTED_ENCODING,
+    );
+
+    fs.writeFileSync(archivePath, encryptedItems, ENCRYPTED_ENCODING);
+  } catch (e) {
+    return new Error('Error: Wrong password.');
+  }
+}
+
 module.exports = {
   encryptFolder: encryptFolder,
   decryptFolder: decryptFolder,
   isPasswordCorrect: isPasswordCorrect,
+  changePassword: changePassword,
 };

@@ -6,7 +6,7 @@ const createReusableInput = require('./src/process/create-reusable-input');
 const getCommand = require('./src/process/get-command');
 const getPassword = require('./src/process/get-password');
 const kill = require('./src/process/kill');
-const { encryptFolder, decryptFolder, isPasswordCorrect } = require('./src/crypto-folder');
+const { encryptFolder, decryptFolder, isPasswordCorrect, changePassword } = require('./src/crypto-folder');
 const clearInputLine = require('./src/process/clear-input-line');
 const { rmdirfull } = require('./src/folder');
 
@@ -59,11 +59,17 @@ function simpleMods(mode) {
 function getFilePath(fileBase, czip, mode) {
   switch (mode) {
     case '-e':
+    case '--encrypt':
       var filePath = fileBase;
       break;
     case '-d':
+    case '--decrypt':
     case '-p':
+    case '--password':
     case '-s':
+    case '--session':
+    case '-n':
+    case '--new_password':
       var filePath = czip;
       break;
     default:
@@ -93,10 +99,12 @@ bootstrap((mode, fileBase, czip, password) => {
   const algorithm = 'aes-256-cbc';
   switch (mode) {
     case '-e':
+    case '--encrypt':
       // Encryption
       encryptFolder(fileBase, czip, password, algorithm);
       kill('Encrypted');
     case '-d':
+    case '--decrypt':
       // Decryption
       var error = decryptFolder(czip, fileBase, password, algorithm);
       if (error) {
@@ -105,6 +113,7 @@ bootstrap((mode, fileBase, czip, password) => {
         kill('Decrypted');
       }
     case '-p':
+    case '--password':
       // Is the password correct?
       if (isPasswordCorrect(czip, password, algorithm)) {
         kill('Password is correct.');
@@ -112,6 +121,7 @@ bootstrap((mode, fileBase, czip, password) => {
         kill('Password is wrong.');
       }
     case '-s':
+    case '--session':
       // Session
       var error = decryptFolder(czip, fileBase, password, algorithm);
       if (error) {
@@ -135,5 +145,17 @@ bootstrap((mode, fileBase, czip, password) => {
         }
       }, '> ');
       break;
+    case '-n':
+    case '--new_password':
+      // Is current password correct?
+      if (!isPasswordCorrect(czip, password, algorithm)) {
+        kill('Error: Wrong password.');
+      }
+
+      // Change password
+      getPassword(newPassword => {
+        changePassword(czip, password, newPassword, algorithm);
+        kill('Password is changed');
+      }, 'New password: ');
   }
 });

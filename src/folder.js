@@ -65,6 +65,11 @@ function getChildList(fullpath) {
 // Remove a folder and all its children
 // WARNING: Be careful. Dangerous function.
 function rmdirfull(fullpath) {
+  if (!fs.existsSync(fullpath)) {
+    // The folder is already removed.
+    return;
+  }
+
   // Prevention of deleting whole system
   const fullNodesLength = getNodes(fullpath);
   if (!fullpath || fullNodesLength <= 1) {
@@ -87,12 +92,16 @@ function rmdirfull(fullpath) {
   
   // Remove files
   for (let file of files) {
-    fs.unlinkSync(file.path);
+    if (fs.existsSync(file.path)) {
+      fs.unlinkSync(file.path);
+    }
   }
 
   // Remove folders
   for (let folder of folders) {
-    fs.rmdirSync(folder.path);
+    if (fs.existsSync(folder.path)) {
+      fs.rmdirSync(folder.path);
+    }
   }
 }
 
