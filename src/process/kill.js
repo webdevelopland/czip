@@ -1,6 +1,8 @@
 // End app with a message
 function kill(message) {
-  console.log(message);
+  if (message) {
+    console.log(message);
+  }
   process.exit();
 }
 
