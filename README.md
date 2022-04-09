@@ -1,5 +1,5 @@
-# czip
-Compression and encryption of files and folders
+# CZIP
+Nodejs console app for file encryption
 
 ## Install
 ```javascript
@@ -7,77 +7,39 @@ npm install czip --global
 ```
 
 ## Encrypt
-item > item.czip
+Encrypt "item" folder into "item.czip" archive
 ```javascript
 czip -e item
 ```
 
 ## Decrypt
-item.czip > item
+Decrypt "item.czip" archive into "item" folder
 ```javascript
 czip -d item
-// WRONG: czip d item.czip
+// WARNING: You should not write ".czip" extention when you decrypt
 ```
 
 ## Is the password correct?
 ```javascript
 czip -p item
 ```
-Exit shortcuts:
-```
-Ctrl+C or Esc
-```
 
-## Session
-Start session.  
-item.czip > item
-```javascript
-czip -s item
-```
-When session is ended, item will be removed.  
-
-### Shortcuts & commands
-You can use it while session is open.  
-
-#### End session
-Shortcuts:
-```
-Ctrl+C or Esc
-```
-Command:
-```
-exit
-```
-
-#### Save session  
-All local files will be encrypted to czip archive without ending the session.  
-
-Shortcut:
-```
-Ctrl+S
-```
-Command:
-```
-save
-```
-
-## Change password
-```javascript
-czip -n item
-```
-
-## Features
-You're able to set password in arguments. Example:
-```javascript
-czip -d item mySuperPass
-```
-
-Current version
+## Current version
 ```javascript
 czip -v
 ```
 
-Help
+## Help
 ```javascript
 czip -h
 ```
+
+## Features
+You're able to set a password in arguments. Example:
+```javascript
+czip -e "my folder" mySuperPass
+```
+
+## See also
+Web version:  
+https://github.com/webdevelopland/cryptozip

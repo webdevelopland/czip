@@ -8,7 +8,6 @@ const {
 } = require('./keys');
 const onInput = require('./on-input');
 const clearInputLine = require('./clear-input-line');
-const pauseInput = require('./pause-input');
 
 function getCommand(callback, prompt) {
   prompt = prompt || '';

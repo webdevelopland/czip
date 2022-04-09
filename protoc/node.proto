@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package wakka.common.node;
+
+message Tree {
+  Meta meta = 1;
+  repeated Folder folder = 2;
+  repeated File file = 3;
+}
+
+message Folder {
+  int64 created_timestamp = 1;
+  int64 updated_timestamp = 2;
+  string path = 3;
+  int32 index = 4;
+  repeated string tag = 5;
+}
+
+message File {
+  int64 created_timestamp = 1;
+  int64 updated_timestamp = 2;
+  string path = 3;
+  int32 index = 4;
+  repeated string tag = 5;
+  Block block = 6;
+}
+
+message Meta {
+  string id = 1;
+  int64 created_timestamp = 2;
+  int64 updated_timestamp = 3;
+  string encryptor_version = 4;
+  int64 update_version = 5;
+}
+
+message Grid {
+  repeated GridRow row = 1;
+}
+
+enum GridType {
+  UNDEFINED = 0;
+  TEXTBLOCK = 1;
+  INPUT = 2;
+  PASSWORD = 3;
+  TEXTAREA = 4;
+  HIDDENBLOCK = 5;
+}
+
+message GridRow {
+  string value = 1;
+  GridType type = 2;
+  string label = 3;
+}
+
+message Block {
+  int64 position = 1;
+  int64 size = 2;
+  bytes key = 3;
+}
+
+message Transfer {
+  repeated Folder folder = 1;
+  repeated TransferFile file = 2;
+}
+
+message TransferFile {
+  int64 created_timestamp = 1;
+  int64 updated_timestamp = 2;
+  string path = 3;
+  int32 index = 4;
+  repeated string tag = 5;
+  bytes binary = 6;
+}
