@@ -7,19 +7,25 @@ function getChildren(folderPath) {
   const childNodes = fs.readdirSync(folderPath);
   for (const childNode of childNodes) {
     const childPath = path.join(folderPath, childNode);
-    const isFolder = fs.lstatSync(childPath).isDirectory();
+    // Windows backslash fix:
+    const unixPath = childPath.replace(/\\/g, '/');
+    if (!fs.existsSync(unixPath)) {
+      console.warn('Invalid path: ' + childPath);
+      continue;
+    }
 
+    const isFolder = fs.lstatSync(unixPath).isDirectory();
     if (isFolder) {
       children.push({
         isFolder: isFolder,
-        path: childPath,
+        path: unixPath,
       });
-      children = children.concat(getChildren(childPath));
+      children = children.concat(getChildren(unixPath));
     } else {
       children.push({
         isFolder: isFolder,
-        path: childPath,
-        size: fs.statSync(childPath).size,
+        path: unixPath,
+        size: fs.statSync(unixPath).size,
       });
     }
   }

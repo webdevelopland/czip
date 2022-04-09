@@ -1,7 +1,7 @@
 {
   "name": "czip",
   "description": "Nodejs console app for file encryption",
-  "version": "2.9.2",
+  "version": "2.9.3",
   "scripts": {
     "lint": "eslint ./src/**/*.js --quiet",
     "lint-fix": "eslint ./src/**/*.js --fix",
