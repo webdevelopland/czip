@@ -11,6 +11,7 @@ const META = require('../environments/meta');
 
 const INT32BYTES = 4;
 const BLOCKSIZE = 16;
+const DEFAULT_POW = 14;
 
 class ZipService {
   constructor(app) {
@@ -48,7 +49,7 @@ class ZipService {
   encrypt(protoTree, password) {
     // Encrypt tree
     console.time('Encrypted');
-    const key = getKey(password);
+    const key = getKey(password, DEFAULT_POW);
     const tree = protoTree.serializeBinary();
     const treeRV = new Uint8Array([...getRV(), ...tree]);
     const paddingTree = AES.padding.pkcs7.pad(treeRV);
@@ -68,6 +69,11 @@ class ZipService {
     buffer = Buffer.from(czipTitle);
     fs.writeSync(writeId, buffer, 0, buffer.length, i);
     i += buffer.length;
+    // PoW
+    buffer = Buffer.alloc(1);
+    buffer[0] = DEFAULT_POW;
+    fs.writeSync(writeId, buffer, 0, buffer.length, i);
+    i += 1;
     // Tree size
     const treeSize = int32ToUint8Array(treeLength);
     buffer = Buffer.from(treeSize);
@@ -92,6 +98,11 @@ class ZipService {
     fs.readSync(readId, buffer, 0, 1, 0);
     const length = buffer[0];
     i += length + 1;
+    // Get CostFactor (N=2^pow)
+    buffer = Buffer.alloc(1);
+    fs.readSync(readId, buffer, 0, 1, i);
+    this.app.dataService.pow = buffer[0];
+    i += 1;
     // Get size of tree
     buffer = Buffer.alloc(INT32BYTES);
     fs.readSync(readId, buffer, 0, INT32BYTES, i);
@@ -99,7 +110,7 @@ class ZipService {
     const treeLength = uint8ArrayToint32(treeSize);
     i += INT32BYTES;
     // Get rv
-    const key = getKey(password);
+    const key = getKey(password, this.app.dataService.pow);
     const iv = getIV();
     buffer = Buffer.alloc(BLOCKSIZE);
     fs.readSync(readId, buffer, 0, BLOCKSIZE, i);
