@@ -37,11 +37,13 @@ class App {
     switch (mode) {
       case '-e':
       case '--encrypt':
-        this.zipService.readFolder(node, password);
+        const protoTree = this.zipService.readFolder(node);
+        this.zipService.encrypt(protoTree, password);
         break;
       case '-d':
       case '--decrypt': {
         this.zipService.decrypt(node, password);
+        this.zipService.unpack();
         break;
       }
       case '-p':
@@ -62,9 +64,11 @@ class App {
   }
 
   session(node, password) {
-    if (!this.zipService.password(node, password)) {
-      kill('Error: Invalid password');
-    }
+    this.zipService.decrypt(node, password);
+    this.startInput();
+  }
+
+  startInput() {
     getCommand(command => {
       switch (command) {
         case 'ls':
@@ -81,7 +85,7 @@ class App {
           clearInputLine();
           pauseInput();
           this.load(() => {
-            this.session(node, password);
+            this.startInput();
           });
           break;
         case 'help':
@@ -91,7 +95,7 @@ class App {
           break;
         case 'version':
           clearInputLine();
-          console.log(META.name + ' ' + META.version);
+          console.log(META.name + ' ' + this.dataService.tree.getMeta().getEncryptorVersion());
           process.stdout.write('> ');
           break;
         case 'exit':

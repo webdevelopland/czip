@@ -17,6 +17,7 @@ class ProtoService {
     const now = Date.now();
     meta.setCreatedTimestamp(now);
     meta.setUpdatedTimestamp(now);
+    meta.setWriteKey(getRandomKey());
     tree.setMeta(meta);
 
     const root = new Proto.Folder();

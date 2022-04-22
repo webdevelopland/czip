@@ -18,7 +18,7 @@ class ZipService {
     this.app = app;
   }
 
-  readFolder(nodeName, password) {
+  readFolder(nodeName) {
     const isFolder = fs.lstatSync(nodeName).isDirectory();
     if (!isFolder) {
       kill('Error: Not a folder. Only folders are available for encryption');
@@ -42,8 +42,7 @@ class ZipService {
         return a.path.localeCompare(b.path);
       }
     });
-    const protoTree = this.app.protoService.getProto(id, children);
-    this.encrypt(protoTree, password);
+    return this.app.protoService.getProto(id, children);
   }
 
   encrypt(protoTree, password) {
@@ -130,7 +129,6 @@ class ZipService {
     const treeRV = AES.padding.pkcs7.strip(paddingTree);
     const tree = treeRV.slice(BLOCKSIZE);
     this.app.protoService.setProto(tree);
-    this.unpack();
   }
 
   unpack() {
@@ -159,10 +157,15 @@ class ZipService {
     fs.readSync(readId, buffer, 0, 1, 0);
     const length = buffer[0];
     i += length + 1;
+    // Get CostFactor (N=2^pow)
+    buffer = Buffer.alloc(1);
+    fs.readSync(readId, buffer, 0, 1, i);
+    this.app.dataService.pow = buffer[0];
+    i += 1;
     // Size of tree
     i += INT32BYTES;
     // Get rv
-    const key = getKey(password);
+    const key = getKey(password, this.app.dataService.pow);
     const iv = getIV();
     buffer = Buffer.alloc(BLOCKSIZE);
     fs.readSync(readId, buffer, 0, BLOCKSIZE, i);
