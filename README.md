@@ -19,6 +19,14 @@ czip -d item
 // WARNING: You should not write ".czip" extention when you decrypt
 ```
 
+## Session
+Decrypt "item.czip" archive for updating.  
+Once the session is ended, the decrypted folder is deleted.  
+Write `help` inside a session, to see more commands.
+```javascript
+czip -s item
+```
+
 ## Is the password correct?
 ```javascript
 czip -p item

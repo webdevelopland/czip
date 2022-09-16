@@ -92,11 +92,16 @@ class ZipService {
     this.app.dataService.readId = readId;
     let buffer;
     let i = 0;
-    // Removes title. E.g. "CZIP2.46"
+    // Get title length
     buffer = Buffer.alloc(1);
     fs.readSync(readId, buffer, 0, 1, 0);
     const length = buffer[0];
-    i += length + 1;
+    i += 1;
+    // Get title
+    buffer = Buffer.alloc(length);
+    fs.readSync(readId, buffer, 0, length, i);
+    this.app.dataService.title = buffer.toString();
+    i += length;
     // Get CostFactor (N=2^pow)
     buffer = Buffer.alloc(1);
     fs.readSync(readId, buffer, 0, 1, i);
@@ -172,6 +177,22 @@ class ZipService {
     const encryptedRV = Uint8Array.from(buffer);
     const rv = decryptCBC(encryptedRV, key, iv);
     return checkRV(rv);
+  }
+
+  getTitle(nodeName) {
+    const readId = fs.openSync(nodeName + '.czip', 'r');
+    let buffer;
+    let i = 0;
+    // Get title length
+    buffer = Buffer.alloc(1);
+    fs.readSync(readId, buffer, 0, 1, 0);
+    const length = buffer[0];
+    i += 1;
+    // Get title
+    buffer = Buffer.alloc(length);
+    fs.readSync(readId, buffer, 0, length, i);
+    fs.close(readId);
+    return buffer.toString();
   }
 }
 

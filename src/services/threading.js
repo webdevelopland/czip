@@ -1,8 +1,8 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const { ReplaySubject } = require('rxjs');
 
-const kill = require('../process/kill');
 const Core = require('../core/worker');
 
 const step = 1024 * 100; // Bytes per write (100 Kb)
@@ -12,7 +12,11 @@ const stepLimit = 1000; // Max 1000 steps in memory (100 Mb)
 class ThreadingService {
   constructor(app) {
     this.app = app;
+  }
+
+  init() {
     this.initCores();
+    this.onload = new ReplaySubject(1);
   }
 
   initCores() {
@@ -33,6 +37,7 @@ class ThreadingService {
   }
 
   encryptBlocks(writeId, tree, offset) {
+    this.init();
     this.writeId = writeId;
     this.offset = offset;
     this.id = tree.getMeta().getId();
@@ -78,7 +83,8 @@ class ThreadingService {
       this.app.bar.stop();
       console.timeEnd('Encrypted');
       this.stopCores();
-      kill();
+      fs.close(this.writeId);
+      this.onload.next();
     }
   }
 
@@ -118,6 +124,7 @@ class ThreadingService {
   }
 
   decryptBlocks(root) {
+    this.init();
     this.root = root;
     this.fileList = this.app.dataService.tree.getFileList();
     this.fileIndex = 0;
@@ -163,7 +170,8 @@ class ThreadingService {
       this.app.bar.stop();
       console.timeEnd('Decrypted');
       this.stopCores();
-      kill();
+      fs.close(this.app.dataService.readId);
+      this.onload.next();
     }
   }
 
