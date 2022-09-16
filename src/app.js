@@ -3,14 +3,12 @@ const cliProgress = require('cli-progress');
 
 const kill = require('./process/kill');
 const createReusableInput = require('./process/create-reusable-input');
-const pauseInput = require('./process/pause-input');
-const getCommand = require('./process/get-command');
 const getPassword = require('./process/get-password');
-const clearInputLine = require('./process/clear-input-line');
 const ZipService = require('./services/zip');
 const DataService = require('./services/data');
 const ProtoService = require('./services/proto');
 const ThreadingService = require('./services/threading');
+const SessionService = require('./services/session');
 const META = require('./environments/meta');
 
 class App {
@@ -21,6 +19,14 @@ class App {
 
     this.simpleMods(mode);
     this.nodeExist(node, mode);
+
+    this.zipService = new ZipService(this);
+    this.dataService = new DataService(this);
+    this.protoService = new ProtoService(this);
+    this.threadingService = new ThreadingService(this);
+    this.sessionService = new SessionService(this);
+
+    this.passlessMods(mode, node);
     createReusableInput();
     this.checkPassword(password, password => {
       this.start(mode, node, password);
@@ -28,10 +34,6 @@ class App {
   }
 
   start(mode, node, password) {
-    this.zipService = new ZipService(this);
-    this.dataService = new DataService(this);
-    this.protoService = new ProtoService(this);
-    this.threadingService = new ThreadingService(this);
     this.bar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 
     switch (mode) {
@@ -39,11 +41,17 @@ class App {
       case '--encrypt':
         const protoTree = this.zipService.readFolder(node);
         this.zipService.encrypt(protoTree, password);
+        this.threadingService.onload.subscribe(() => {
+          kill();
+        });
         break;
       case '-d':
       case '--decrypt': {
         this.zipService.decrypt(node, password);
         this.zipService.unpack();
+        this.threadingService.onload.subscribe(() => {
+          kill();
+        });
         break;
       }
       case '-p':
@@ -57,66 +65,14 @@ class App {
       }
       case '-s':
       case '--session': {
-        this.session(node, password);
+        this.zipService.decrypt(node, password);
+        this.zipService.unpack();
+        this.threadingService.onload.subscribe(() => {
+          this.sessionService.startInput(node, password);
+        });
         break;
       }
     }
-  }
-
-  session(node, password) {
-    this.zipService.decrypt(node, password);
-    this.startInput();
-  }
-
-  startInput() {
-    getCommand(command => {
-      switch (command) {
-        case 'ls':
-          clearInputLine();
-          console.log('Under development...');
-          process.stdout.write('> ');
-          break;
-        case 'save':
-          clearInputLine();
-          console.log('Saving...');
-          process.stdout.write('> ');
-          break;
-        case 'load':
-          clearInputLine();
-          pauseInput();
-          this.load(() => {
-            this.startInput();
-          });
-          break;
-        case 'help':
-          clearInputLine();
-          this.help();
-          process.stdout.write('> ');
-          break;
-        case 'version':
-          clearInputLine();
-          console.log(META.name + ' ' + this.dataService.tree.getMeta().getEncryptorVersion());
-          process.stdout.write('> ');
-          break;
-        case 'exit':
-          kill('Session ended.');
-      }
-    }, '> ');
-  }
-
-  load(callback) {
-    // Progress bar demo...
-    this.bar.start(100, 0);
-    let i = 0;
-    const id = setInterval(() => {
-      this.bar.update(i);
-      i++;
-      if (i > 100) {
-        clearInterval(id);
-        this.bar.stop();
-        callback();
-      }
-    }, 50);
   }
 
   simpleMods(mode) {
@@ -131,6 +87,15 @@ class App {
     }
   }
 
+  passlessMods(mode, node) {
+    switch (mode) {
+      case '-t':
+      case '--title':
+        const title = this.zipService.getTitle(node);
+        kill(title);
+    }
+  }
+
   help() {
     console.log('CZIP help');
     console.log('');
@@ -139,6 +104,7 @@ class App {
     console.log('-d: Decrypt');
     console.log('-p: Is the password correct?');
     console.log('-s: Session');
+    console.log('-t: Show title');
     console.log('-v: Current version');
     console.log('-h: Help');
     console.log('');
@@ -161,6 +127,8 @@ class App {
       case '--password':
       case '-s':
       case '--session':
+      case '-t':
+      case '--title':
         nodePath = node + '.czip';
         break;
       default:
